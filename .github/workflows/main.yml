@@ -1,0 +1,30 @@
+on:
+  push:
+    branches:
+    - MODUL01A
+  workflow_dispatch:
+
+jobs:
+  Rename:
+   runs-on: ubuntu-latest
+   name: "Rename branch"
+   steps:
+   
+     - run: |
+        git branch -m ${{ github.event.repository.name }}A
+        git push origin -u ${{ github.event.repository.name }}A
+        # git push origin --delete MODUL01A
+
+     - run: |
+        git pull --recurse-submodules
+        git submodule update --init --remote --recursive
+     
+     - run: |
+        cd doc/assets/workflows/
+        ./copy_workflow_to_repo.sh
+     
+     - uses: stefanzweifel/git-auto-commit-action@v4
+       with:
+         commit_message: Update submodules
+         add_options: '-A -f'
+         commit_options: '-a'
